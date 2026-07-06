@@ -1,0 +1,94 @@
+══════════════════════════════════════════════════════════════════
+  PONTUAL TV — COMO GERAR E INSTALAR O APK SEM ANDROID STUDIO
+══════════════════════════════════════════════════════════════════
+
+PASSO 1 — Criar conta no GitHub (grátis)
+─────────────────────────────────────────
+  Acesse: https://github.com
+  Clique em "Sign up" e crie uma conta gratuita.
+
+PASSO 2 — Criar repositório
+─────────────────────────────────────────
+  1. Após login no GitHub, clique em "New repository" (botão verde)
+  2. Nome: PontualTV
+  3. Deixe como "Private" (ou Public, tanto faz)
+  4. Clique em "Create repository"
+
+PASSO 3 — Fazer upload dos arquivos do projeto
+─────────────────────────────────────────────────
+  1. Na página do repositório vazio, clique em "uploading an existing file"
+  2. IMPORTANTE: faça upload de TODA a pasta PontualTV_App de uma vez
+     (arraste a pasta inteira para a área de upload)
+  3. Clique em "Commit changes"
+
+  Estrutura esperada no GitHub:
+  ├── .github/workflows/build.yml
+  ├── app/
+  │   ├── src/main/java/br/com/pontual/tv/
+  │   │   ├── MainActivity.java
+  │   │   └── BootReceiver.java
+  │   ├── src/main/res/...
+  │   ├── src/main/AndroidManifest.xml
+  │   └── build.gradle
+  ├── build.gradle
+  └── settings.gradle
+
+PASSO 4 — Aguardar o build automático (2-4 minutos)
+──────────────────────────────────────────────────────
+  1. Clique na aba "Actions" no seu repositório
+  2. Você verá "Build Pontual TV APK" em execução (círculo amarelo)
+  3. Aguarde ficar verde (✓)
+  4. Se ficar vermelho (✗), me envie um print do erro
+
+PASSO 5 — Baixar o APK
+─────────────────────────
+  1. Clique no build concluído (verde)
+  2. Role para baixo até "Artifacts"
+  3. Clique em "PontualTV-APK" para baixar
+  4. Extraia o ZIP — dentro está o arquivo "app-debug.apk"
+
+PASSO 6 — Instalar no Fire TV via ADB
+───────────────────────────────────────
+  Habilitar ADB no Fire TV:
+  Configurações > Meu Fire TV > Opções do desenvolvedor
+  → Depuração ADB: ATIVADO
+  → Aplicativos de fontes desconhecidas: ATIVADO
+
+  No PC, abra o Prompt de Comando (cmd) e execute:
+
+  adb connect 192.168.2.XXX        ← IP do Fire TV (veja em Configurações > Rede)
+  adb install caminho\app-debug.apk
+
+  Se não tiver o ADB instalado:
+  Baixe em: https://developer.android.com/studio/releases/platform-tools
+  Extraia e use o adb.exe da pasta extraída.
+
+══════════════════════════════════════════════════════════════════
+  USANDO O APP NO FIRE TV
+══════════════════════════════════════════════════════════════════
+
+  1ª vez: O app abre uma tela de configuração pedindo a URL do painel.
+
+  Exemplos de URL:
+    http://192.168.2.206/tv/loja002-acougue-tv1
+    http://192.168.2.206/tv/loja002-acougue-tv2
+
+  Digite a URL, clique em "SALVAR E ABRIR PAINEL".
+
+  O app vai para fullscreen e abre o painel automaticamente.
+
+  Para RECONFIGURAR depois:
+  → Pressione o botão VOLTAR do controle 5 vezes seguidas (em menos de 3s)
+  → A tela de configuração reaparece
+
+  O app INICIA AUTOMATICAMENTE quando o Fire TV é ligado.
+
+══════════════════════════════════════════════════════════════════
+  UM APK POR TV (cada TV tem URL diferente)
+══════════════════════════════════════════════════════════════════
+
+  O mesmo APK funciona em todas as TVs — a URL é configurada
+  individualmente na tela de setup de cada Fire TV.
+  Não precisa gerar um APK diferente por TV.
+
+══════════════════════════════════════════════════════════════════

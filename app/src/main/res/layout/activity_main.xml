@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- WebView do painel TV -->
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- Tela de configuração -->
+    <ScrollView
+        android:id="@+id/setupLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0d1117"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="60dp">
+
+            <!-- Título -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PONTUAL TV"
+                android:textColor="#00843D"
+                android:textSize="42sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Supermercados — Painel Digital"
+                android:textColor="#6b7280"
+                android:textSize="18sp"
+                android:layout_marginBottom="36dp" />
+
+            <!-- Campo IP do servidor + botão buscar -->
+            <LinearLayout
+                android:layout_width="700dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <EditText
+                    android:id="@+id/etServidor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="IP do servidor (ex: 192.168.2.206)"
+                    android:textSize="16sp"
+                    android:padding="14dp"
+                    android:background="#ffffff"
+                    android:textColor="#111827"
+                    android:textColorHint="#9ca3af"
+                    android:inputType="textUri"
+                    android:singleLine="true"
+                    android:layout_marginEnd="10dp" />
+
+                <Button
+                    android:id="@+id/btnBuscar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buscar TVs"
+                    android:textSize="15sp"
+                    android:textColor="#ffffff"
+                    android:backgroundTint="#1d4ed8"
+                    android:padding="14dp" />
+            </LinearLayout>
+
+            <!-- Lista de TVs disponíveis -->
+            <ScrollView
+                android:id="@+id/tvListScroll"
+                android:layout_width="700dp"
+                android:layout_height="280dp"
+                android:layout_marginBottom="24dp"
+                android:background="#111827"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:id="@+id/tvListLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+
+            <!-- Separador -->
+            <TextView
+                android:layout_width="700dp"
+                android:layout_height="wrap_content"
+                android:text="— ou digite a URL manualmente —"
+                android:textColor="#374151"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Campo de URL manual -->
+            <EditText
+                android:id="@+id/etUrl"
+                android:layout_width="700dp"
+                android:layout_height="wrap_content"
+                android:hint="http://192.168.2.206/tv/loja002-acougue-tv1"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:background="#ffffff"
+                android:textColor="#111827"
+                android:textColorHint="#9ca3af"
+                android:inputType="textUri"
+                android:singleLine="true"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Botão Salvar -->
+            <Button
+                android:id="@+id/btnSalvar"
+                android:layout_width="340dp"
+                android:layout_height="64dp"
+                android:text="SALVAR E ABRIR PAINEL"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:backgroundTint="#00843D"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Botão Redefinir -->
+            <Button
+                android:id="@+id/btnRedefinir"
+                android:layout_width="340dp"
+                android:layout_height="52dp"
+                android:text="Limpar e redefinir"
+                android:textSize="15sp"
+                android:textColor="#9ca3af"
+                android:backgroundTint="#1f2937" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Para reconfigurar depois: pressione VOLTAR 5 vezes seguidas"
+                android:textColor="#374151"
+                android:textSize="13sp"
+                android:layout_marginTop="28dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
