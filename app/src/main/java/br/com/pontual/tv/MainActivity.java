@@ -15,6 +15,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
@@ -211,15 +212,14 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onPageFinished(WebView view, String url) {
-                // Desativa requestFullscreen — no WebView do Fire TV causa tela preta
-                view.evaluateJavascript(
-                    "try{" +
-                    "document.documentElement.requestFullscreen=function(){return Promise.resolve();};" +
-                    "document.documentElement.webkitRequestFullscreen=function(){};" +
-                    "document.exitFullscreen=function(){return Promise.resolve();};" +
-                    "document.webkitExitFullscreen=function(){};" +
-                    "}catch(e){}", null);
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
+                String url = req.getUrl().toString();
+                // Substitui enterprise_fullscreen.js por versão vazia (causa tela preta no Fire TV WebView)
+                if (url.contains("enterprise_fullscreen")) {
+                    return new WebResourceResponse("application/javascript", "UTF-8",
+                        new java.io.ByteArrayInputStream("/* fullscreen desativado no app nativo */".getBytes()));
+                }
+                return super.shouldInterceptRequest(view, req);
             }
             @Override
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
