@@ -15,10 +15,10 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,9 +43,14 @@ public class MainActivity extends Activity {
     private SharedPreferences prefs;
     private final Handler handler = new Handler();
 
-    private static final String PREFS_NAME  = "pontual_tv_cfg";
-    private static final String KEY_URL     = "tv_url";
-    private static final String KEY_SERVER  = "tv_server";
+    // Para tratar fullscreen do WebView sem tela preta
+    private View mFullscreenView;
+    private WebChromeClient.CustomViewCallback mFullscreenCallback;
+    private FrameLayout mContainer;
+
+    private static final String PREFS_NAME = "pontual_tv_cfg";
+    private static final String KEY_URL    = "tv_url";
+    private static final String KEY_SERVER = "tv_server";
 
     private int backCount = 0;
     private final Runnable resetBack = () -> backCount = 0;
@@ -65,6 +70,7 @@ public class MainActivity extends Activity {
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         setContentView(R.layout.activity_main);
 
+        mContainer    = findViewById(R.id.rootContainer);
         webView       = findViewById(R.id.webView);
         setupLayout   = findViewById(R.id.setupLayout);
         etUrl         = findViewById(R.id.etUrl);
@@ -78,11 +84,9 @@ public class MainActivity extends Activity {
 
         configurarWebView();
 
-        // Preenche servidor salvo
         String servidorSalvo = prefs.getString(KEY_SERVER, "192.168.2.206");
         etServidor.setText(servidorSalvo);
 
-        // Ao mudar servidor, limpa lista
         etServidor.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             public void onTextChanged(CharSequence s, int st, int b, int c) { tvListLayout.removeAllViews(); }
@@ -201,26 +205,42 @@ public class MainActivity extends Activity {
         ws.setJavaScriptEnabled(true);
         ws.setDomStorageEnabled(true);
         ws.setMediaPlaybackRequiresUserGesture(false);
-        ws.setLoadWithOverviewMode(true);
-        ws.setUseWideViewPort(true);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
         ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         ws.setBuiltInZoomControls(false);
         ws.setSupportZoom(false);
+        // Sem useWideViewPort/loadWithOverviewMode para evitar barras pretas
         webView.setBackgroundColor(Color.BLACK);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient() {
+
+        // WebChromeClient trata fullscreen corretamente — evita tela preta
+        webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
-                String url = req.getUrl().toString();
-                // Substitui enterprise_fullscreen.js por versão vazia (causa tela preta no Fire TV WebView)
-                if (url.contains("enterprise_fullscreen")) {
-                    return new WebResourceResponse("application/javascript", "UTF-8",
-                        new java.io.ByteArrayInputStream("/* fullscreen desativado no app nativo */".getBytes()));
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                if (mFullscreenView != null) {
+                    mFullscreenCallback.onCustomViewHidden();
                 }
-                return super.shouldInterceptRequest(view, req);
+                mFullscreenView = view;
+                mFullscreenCallback = callback;
+                mContainer.addView(view, new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                ));
+                webView.setVisibility(View.GONE);
+                mFullscreenView.setVisibility(View.VISIBLE);
             }
+
+            @Override
+            public void onHideCustomView() {
+                if (mFullscreenView != null) {
+                    mContainer.removeView(mFullscreenView);
+                    mFullscreenView = null;
+                }
+                webView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
                 if (req.isForMainFrame()) {
@@ -270,6 +290,11 @@ public class MainActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // Se fullscreen ativo, fecha fullscreen primeiro
+            if (mFullscreenView != null) {
+                if (mFullscreenCallback != null) mFullscreenCallback.onCustomViewHidden();
+                return true;
+            }
             if (setupLayout.getVisibility() == View.VISIBLE) {
                 moveTaskToBack(true);
                 return true;
@@ -292,6 +317,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         esconderBarraSistema();
+        if (webView != null) webView.onResume();
     }
 
     @Override
