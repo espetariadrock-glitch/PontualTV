@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
+      - name: Checkout codigo
         uses: actions/checkout@v4
 
       - name: Configurar JDK 17
@@ -22,18 +22,15 @@ jobs:
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Instalar Gradle e gerar wrapper
+      - name: Instalar Gradle 8.4
         run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
-          unzip -q gradle-8.4-bin.zip -d /opt/gradle
-          export PATH=$PATH:/opt/gradle/gradle-8.4/bin
-          gradle wrapper --gradle-version 8.4
+          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip -O /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /opt/gradle
 
-      - name: Permissão gradlew
-        run: chmod +x gradlew
-
-      - name: Build APK (debug — pronto para instalar via ADB)
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build APK
+        run: /opt/gradle/gradle-8.4/bin/gradle assembleDebug
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
