@@ -242,6 +242,14 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public void onPageFinished(WebView view, String url) {
+                // Dispara clique simulado para desbloquear autoplay de vídeo no Fire TV WebView
+                view.evaluateJavascript(
+                    "document.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));" +
+                    "document.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,cancelable:true}));",
+                    null);
+            }
+            @Override
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
                 if (req.isForMainFrame()) {
                     handler.postDelayed(() -> {
