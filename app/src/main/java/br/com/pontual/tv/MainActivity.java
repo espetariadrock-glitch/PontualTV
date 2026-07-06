@@ -211,6 +211,17 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public void onPageFinished(WebView view, String url) {
+                // Desativa requestFullscreen — no WebView do Fire TV causa tela preta
+                view.evaluateJavascript(
+                    "try{" +
+                    "document.documentElement.requestFullscreen=function(){return Promise.resolve();};" +
+                    "document.documentElement.webkitRequestFullscreen=function(){};" +
+                    "document.exitFullscreen=function(){return Promise.resolve();};" +
+                    "document.webkitExitFullscreen=function(){};" +
+                    "}catch(e){}", null);
+            }
+            @Override
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
                 if (req.isForMainFrame()) {
                     handler.postDelayed(() -> {
